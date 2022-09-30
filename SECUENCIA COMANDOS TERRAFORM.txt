@@ -1,0 +1,10 @@
+SECUENCIA DE COMANDOS TERRAFORM
+
+>terraform init 
+	inicializa el proyecto.
+
+>terraform plan
+	retorna la lista con los recursos que se van a agregar, modificar o eliminar.
+
+>terraform apply
+	Realiza otro control sobre los cambios y consultas sobre si se está de acuerdo con los cambios antes de aplicarlos. 
