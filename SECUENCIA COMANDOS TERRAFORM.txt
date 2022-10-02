@@ -8,3 +8,18 @@ SECUENCIA DE COMANDOS TERRAFORM
 
 >terraform apply
 	Realiza otro control sobre los cambios y consultas sobre si se está de acuerdo con los cambios antes de aplicarlos. 
+	consultará si se quieren aplicar los cambios.
+
+>terraform destroy
+	precaución con este comando, ya que destruye los recursos previamente creados en la infraestructura. 
+
+
+Tips:
+
+Para encontrar ejemplos rapidamente, googlear como: 
+
+terraform nombre_del_proveedor tipo_de_recurso.
+
+ejemplo: 	   terraform aws subnet.
+		   terraform gcp vpc.
+			 	
