@@ -7,11 +7,14 @@ SECUENCIA DE COMANDOS TERRAFORM
 	retorna la lista con los recursos que se van a agregar, modificar o eliminar.
 
 >terraform apply
-	Realiza otro control sobre los cambios y consultas sobre si se está de acuerdo con los cambios antes de aplicarlos. 
-	consultará si se quieren aplicar los cambios.
+	Realiza otro control sobre los cambios y consultará si se quieren aplicar los cambios.
+	
 
 >terraform destroy
 	precaución con este comando, ya que destruye los recursos previamente creados en la infraestructura. 
+
+>terraform apply --auto-approve
+	aplica los cambios SIN CONSULTAR si se está de acuerdo con los recursos o modificaciones que se van a implementar.
 
 
 Tips:
@@ -21,5 +24,26 @@ Para encontrar ejemplos rapidamente, googlear como:
 terraform nombre_del_proveedor tipo_de_recurso.
 
 ejemplo: 	   terraform aws subnet.
-		   terraform gcp vpc.
+		   	   terraform gcp vpc.
+
+
+
+------------------------------------------------------------------------------------------------------------------------------
+
+
+apuntes:
+
+El archivo terraform-provider-aws.exe y terraform.tfstate son creados al momento de ejecutar >terraform init
+
+El archivo terraform-provider-aws.exe son las configuraciones necesarias para conectarnos con el provedor.
+
+El archivo terraform.tfstate representa todo el estado de terraform, es la forma que terraform mantiene seguimiento de todo lo que crea. 
+En caso de modificaciones, necesita verificar el estado actual de ese recurso, cuales son sus configuraciones y compararlo con lo que está en el código. 
+
+
+
+
+
+
+
 			 	

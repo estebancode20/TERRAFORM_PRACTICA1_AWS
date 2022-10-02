@@ -25,6 +25,22 @@ resource "<proveedor>_<tipo_de_recurso>" "nombre que le asignamos al recurso" {
 
 }
 
+
+# Definimos una SUBNET, vamos a crear una subred dentro de la VPC
+resource "aws_subnet" "subnet-1" {
+  # Como obtenemos el id del VPC correcto?
+  vpc_id = aws_vpc.first-vpc # Podemos referenciar el recurso mediante el "<proveedor>_<tipo_de_recurso>" "nombre que le asignamos al recurso"
+  cidr_block = "10.0.1.0/24"
+
+  tags = {
+    Name = "prod-subnet"
+  }
+  
+}
+
+# A TERRAFORM NO LE AFECTA EL ORDEN EN EL QUE SE DEFINAN LOS RECURSOS EN EL CODIGO, YA QUE IDENTIFICA QUE SE DEBE CREAR PRIMERO.
+
+
 # Definimos una VPC ( virtual private cloud) red virtual privada en la nube.
 # básicamente es una red aislada dentro del entorno de AWS.
 # se pueden crear tantos vpc como sea necesario.
@@ -40,9 +56,6 @@ resource "aws_vpc" "first-vpc" {
   }
 
 }
-
-
-
 
 # Defimos una maquina virtual como recurso
 resource "aws-service" "my-first-server" {
