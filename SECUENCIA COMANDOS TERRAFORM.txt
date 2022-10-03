@@ -24,11 +24,13 @@ Para encontrar ejemplos rapidamente, googlear como:
 terraform nombre_del_proveedor tipo_de_recurso.
 
 ejemplo: 	   terraform aws subnet.
-		   	   terraform gcp vpc.
+		   terraform gcp vpc.
+		   terraform aws route table
+	         terraform aws route table association
 
 
 
-------------------------------------------------------------------------------------------------------------------------------
+#------------------------------------------------------------------------------------------------------------------------------
 
 
 apuntes:
@@ -39,6 +41,24 @@ El archivo terraform-provider-aws.exe son las configuraciones necesarias para co
 
 El archivo terraform.tfstate representa todo el estado de terraform, es la forma que terraform mantiene seguimiento de todo lo que crea. 
 En caso de modificaciones, necesita verificar el estado actual de ese recurso, cuales son sus configuraciones y compararlo con lo que está en el código. 
+
+
+#------------------------------------------------------------------------------------------------------------------------------
+
+main_project
+
+
+# 1. Crear VPC (Red Virtual Privada en la nube).
+# 2. Crear puerta de enlace a Internet.
+# 3. Crear tablas de rutas personalizadas.
+# 4. Crea una subred.
+# 5. Asociar subred con tabla de rutas.
+# 6. Crear grupo de seguridad para permitir el puerto 22, 80, 443.
+# 7. Cree una interfaz de red con una ip en la subred que se creó en el paso 4.
+# 8. Asigne una IP elástica a la interfaz de red creada en el paso 7.
+# 9. Cree un servidor Ubuntu e instale/habilite apache2.
+
+
 
 
 

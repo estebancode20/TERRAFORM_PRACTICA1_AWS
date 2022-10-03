@@ -29,7 +29,7 @@ resource "<proveedor>_<tipo_de_recurso>" "nombre que le asignamos al recurso" {
 # Definimos una SUBNET, vamos a crear una subred dentro de la VPC
 resource "aws_subnet" "subnet-1" {
   # Como obtenemos el id del VPC correcto?
-  vpc_id = aws_vpc.first-vpc # Podemos referenciar el recurso mediante el "<proveedor>_<tipo_de_recurso>" "nombre que le asignamos al recurso"
+  vpc_id = aws_vpc.first-vpc.id # Podemos referenciar el recurso mediante el "<proveedor>_<tipo_de_recurso>" "nombre que le asignamos al recurso"
   cidr_block = "10.0.1.0/24"
 
   tags = {
