@@ -91,8 +91,8 @@ resource "aws_route_table" "prod-route-table" {
 # 4. Create a subnet
 # 4. Crea una subred.
 resource "aws_subnet" "subnet-1" {
-  vpc_id = aws_vpc.prod_vpc.id # este id hace referencia a la VPC
-  cidr_block = "10.0.1.0/24"
+  vpc_id            = aws_vpc.prod_vpc.id # este id hace referencia a la VPC
+  cidr_block        = "10.0.1.0/24"
   availability_zone = "us-east-1a" # zona de disponibilidad, los proveedores poseen varios centro de datos en una región. 
 
   tags = {
@@ -104,6 +104,81 @@ resource "aws_subnet" "subnet-1" {
 
 # 5. Asociar subred con tabla de rutas.
 # 5. Associate subnet with Route Table
+resource "aws_route_table_association" "a" {
+  subnet_id      = aws_subnet.subnet-1.id              # este id hace referencia a la subred
+  route_table_id = aws_route_table.prod-route-table.id # este id hace referencia a la tabla de rutas
+}
+
+
+
+# DEFINIR UNA POLITICA DE SEGURIDAD QUE SE LIMITE A LOS PROTOCOLOS NECESARIOS  
+
+# 6. Crear grupo de seguridad para permitir el puerto 22, 80, 443.
+# 6. Create Security Group to allow port 22, 80, 443
+resource "aws_security_group" "allow_web" {
+  name        = "allow_web_traffic"
+  description = "allow web inbound traffic"
+  vpc_id      = aws_vpc.prod_vpc.id # este id hace referencia a la VPC
+
+
+  # Aquí aplicamos las diferentes reglas
+  # Politica de ingreso
+  ingress = {
+    # vamos a permitir el tráfico TCP en el puerto 443
+    # El from_port y el to_port nos permite definir un rango de puertos  
+    # En caso que el from_port y el to_port sea el mismo, implica que estamos permitiendo solo ese puerto.
+    description = "HTPPS" # Esto es tecnicamente trafico https
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_block  = ["0.0.0.0/0"] # "0.0.0.0/0" implica que cualquier direccion ip puede ingresar a ella
+    # cidr_block = ["1.1.1.1/32"]  pero si solo quisieramos una ip específica, como "1.1.1.1/32", definimos que solo conoce esa direccion ip
+
+
+    # PODEMOS TENER TANTAS POLITICAS DE ENTRADA Y SALIDAS COMO QUERAMOS
+
+    description = "HTPPS" # Esto es tecnicamente trafico https
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_block  = ["0.0.0.0/0"]
+
+    description = "SSH" # Esto es tecnicamente trafico https
+    from_port   = 2
+    to_port     = 2
+    protocol    = "tcp"
+    cidr_block  = ["0.0.0.0/0"]
+
+  }
+
+  # Politica de salida
+  egress = {
+    # 0 quiere decir que estamos permitiendo todos los puertos en la direccion de salida
+    from_port  = 0
+    to_port    = 0
+    protocol   = "-1" # -1 implica que puede ser cualquier protocolo
+    cidr_block = ["0.0.0.0/0"]
+
+
+    # agregamos etiqueta a este recurso... 
+    # sirve para poder buscar los recursos y filtrarlos por las etiquetas.
+    tags = {
+      Name = "allow_web" # nombre que le asignamos a la etiqueta = allow_web
+
+    }
+
+  }
+
+}
+
+
+# 7. Cree una interfaz de red con una ip en la subred que se creó en el paso 4.
+# 7. Create a network interface with an ip in the subnet that was created in step 4
+
+
+
+
+
 
 
 

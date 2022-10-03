@@ -19,7 +19,7 @@ SECUENCIA DE COMANDOS TERRAFORM
 
 Tips:
 
-Para encontrar ejemplos rapidamente, googlear como: 
+Para encontrar ejemplos rapidamente, Googlear como: 
 
 terraform nombre_del_proveedor tipo_de_recurso.
 
@@ -27,6 +27,8 @@ ejemplo: 	   terraform aws subnet.
 		   terraform gcp vpc.
 		   terraform aws route table
 	         terraform aws route table association
+		   terraform aws security group
+		   terraform aws network interface
 
 
 
@@ -49,7 +51,7 @@ main_project
 
 
 # 1. Crear VPC (Red Virtual Privada en la nube).
-# 2. Crear puerta de enlace a Internet.
+# 2. Crear puerta de enlace a Internet.(Internet Gateway)
 # 3. Crear tablas de rutas personalizadas.
 # 4. Crea una subred.
 # 5. Asociar subred con tabla de rutas.
