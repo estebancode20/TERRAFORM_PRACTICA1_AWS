@@ -29,6 +29,7 @@ ejemplo: 	   terraform aws subnet.
 	         terraform aws route table association
 		   terraform aws security group
 		   terraform aws network interface
+		   terraform aws eip
 
 
 

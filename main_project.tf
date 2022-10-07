@@ -54,7 +54,7 @@ resource "aws_vpc" "prod_vpc" { # "<proveedor>_<tipo_de_recurso>" "nombre que le
 # 2. Crear puerta de enlace a Internet.(Internet Gateway)
 # 2. Create Internet Gateway
 resource "aws_internet_gateway" "gw" {
-  vpc_id = aws_vpc.prod_vpc.id # este id hace referencia a la VPC, queremos la propiedad id de este recurso, no queremos el recurso en sí.
+  vpc_id = aws_vpc.prod_vpc.id # este id hace referencia al id de la VPC, queremos la propiedad id de este recurso, no queremos el recurso en sí.
 }
 
 
@@ -64,7 +64,7 @@ resource "aws_internet_gateway" "gw" {
 # 3. Crear tablas de rutas personalizadas.
 # 3. Create Custom Route tables
 resource "aws_route_table" "prod-route-table" {
-  vpc_id = aws_internet_gateway.gw.id # este id hace referencia a la puerta de enlace
+  vpc_id = aws_internet_gateway.gw.id # este id hace referencia al id de la puerta de enlace
 
   route {
     cidr_block = "0.0.0.0/0"
@@ -91,7 +91,7 @@ resource "aws_route_table" "prod-route-table" {
 # 4. Create a subnet
 # 4. Crea una subred.
 resource "aws_subnet" "subnet-1" {
-  vpc_id            = aws_vpc.prod_vpc.id # este id hace referencia a la VPC
+  vpc_id            = aws_vpc.prod_vpc.id # este id hace referencia al id de la VPC
   cidr_block        = "10.0.1.0/24"
   availability_zone = "us-east-1a" # zona de disponibilidad, los proveedores poseen varios centro de datos en una región. 
 
@@ -105,8 +105,8 @@ resource "aws_subnet" "subnet-1" {
 # 5. Asociar subred con tabla de rutas.
 # 5. Associate subnet with Route Table
 resource "aws_route_table_association" "a" {
-  subnet_id      = aws_subnet.subnet-1.id              # este id hace referencia a la subred
-  route_table_id = aws_route_table.prod-route-table.id # este id hace referencia a la tabla de rutas
+  subnet_id      = aws_subnet.subnet-1.id              # este id hace referencia al id de la subred
+  route_table_id = aws_route_table.prod-route-table.id # este id hace referencia al id de la tabla de rutas
 }
 
 
@@ -118,7 +118,7 @@ resource "aws_route_table_association" "a" {
 resource "aws_security_group" "allow_web" {
   name        = "allow_web_traffic"
   description = "allow web inbound traffic"
-  vpc_id      = aws_vpc.prod_vpc.id # este id hace referencia a la VPC
+  vpc_id      = aws_vpc.prod_vpc.id # este id hace referencia al id de la VPC
 
 
   # Aquí aplicamos las diferentes reglas
@@ -137,13 +137,13 @@ resource "aws_security_group" "allow_web" {
 
     # PODEMOS TENER TANTAS POLITICAS DE ENTRADA Y SALIDAS COMO QUERAMOS
 
-    description = "HTPPS" # Esto es tecnicamente trafico https
+    description = "HTPPS" # Esto es trafico https
     from_port   = 80
     to_port     = 80
     protocol    = "tcp"
     cidr_block  = ["0.0.0.0/0"]
 
-    description = "SSH" # Esto es tecnicamente trafico https
+    description = "SSH"
     from_port   = 2
     to_port     = 2
     protocol    = "tcp"
@@ -174,6 +174,51 @@ resource "aws_security_group" "allow_web" {
 
 # 7. Cree una interfaz de red con una ip en la subred que se creó en el paso 4.
 # 7. Create a network interface with an ip in the subnet that was created in step 4
+resource "aws_network_interface" "web-server-nic" {
+  subnet_id   = aws_subnet.subnet-1.id # este id hace referencia a la subred
+  private_ips = ["10.0.1.50"]          # podemos elegir cualquier direccion ip dentro de la subred...
+  # excepto las que son reservadas por AWS. 
+
+  security_groups = [aws_security_group.allow_web.id] # este id hace referencia al id del grupo de seguridad
+
+
+  # attachment {  # podemos adjutarlo a un dispositivo, pero lo omitimos por ahora
+  #   instance = "${aws_instance.test.id}"
+  #   device_index = 1
+  # }
+
+
+}
+
+
+# 8. Asigne una IP elástica a la interfaz de red creada en el paso 7.
+# 8. Assign an elastic IP to the network interface created in step 7
+resource "aws_eip" "one" {
+  vpc = true # es booleano, si la direccion ip está o no en una VPC 
+  network_interface = aws_network_interface.web-server-nic.id # este id hace referencia a la interfaz de red
+  associate_with_private_ip = "10.0.1.50"
+  depends_on = aws_internet_gateway.gw  # hacemos referencia a todo el objeto "puerta de enlace a internet ", no solo al id 
+                                        # la direccion ip elastica requiere que exista una puerta de enlace a internet antes de la asociación
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
