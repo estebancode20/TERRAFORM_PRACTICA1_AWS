@@ -67,13 +67,13 @@ resource "aws_route_table" "prod-route-table" {
   vpc_id = aws_internet_gateway.gw.id # este id hace referencia al id de la puerta de enlace
 
   route {
-    cidr_block = "0.0.0.0/0"
+    cidr_block = "0.0.0.0/0" # bloque CIDR (classless inter-domain routing) enrutamiento entre dominios sin clases.
     gateway_id = aws_internet_gateway.gw.id
   }
 
   route {
     ipv6_cidr_block        = "::/0"                     # "0.0.0.0/0" es el equivalente a "::/0" pero en ipv6
-    egress_only_gateway_id = aws_internet_gateway.gw.id # lo apuntamos a la misma puerta de enlace (gateway_id) 
+    gateway_id = aws_internet_gateway.gw.id # lo apuntamos a la misma puerta de enlace (gateway_id) 
 
   }
 
@@ -194,11 +194,53 @@ resource "aws_network_interface" "web-server-nic" {
 # 8. Asigne una IP elástica a la interfaz de red creada en el paso 7.
 # 8. Assign an elastic IP to the network interface created in step 7
 resource "aws_eip" "one" {
-  vpc = true # es booleano, si la direccion ip está o no en una VPC 
-  network_interface = aws_network_interface.web-server-nic.id # este id hace referencia a la interfaz de red
+  vpc                       = true                                    # es booleano, si la direccion ip está o no en una VPC 
+  network_interface         = aws_network_interface.web-server-nic.id # este id hace referencia a la interfaz de red
   associate_with_private_ip = "10.0.1.50"
-  depends_on = aws_internet_gateway.gw  # hacemos referencia a todo el objeto "puerta de enlace a internet ", no solo al id 
-                                        # la direccion ip elastica requiere que exista una puerta de enlace a internet antes de la asociación
+  depends_on                = aws_internet_gateway.gw # hacemos referencia a todo el objeto "puerta de enlace a internet ", no solo al id 
+  # la direccion ip elastica requiere que exista una puerta de enlace a internet antes de la asociación
+}
+
+
+# 9. Cree un servidor Ubuntu e instale/habilite apache2.
+# 9. Create an Ubuntu server and install/enable apache2
+resource "aws_instance" "web-server-instance" {
+  ami           = "ami-08598383299" # ami ubuntu server
+  instance_type = "t2.micro"        # tipo de instancia
+
+  # zona donde está la subnet
+  availability_zone = "us-east-1a" # zona de disponibilidad, los proveedores poseen varios centro de datos en una región. 
+  # sino especificas la zona, Amazon elegirá una zona de disponibilidad aleatoria para implemetarla
+  # no es recomendable tener un servidor en una zona y la subred en distintas zonas, ya que puede causar problemas.
+  #Es mejor especificar la zona de disponibilidad a que Amazon escoja aleatoriamente. 
+  
+  key_name = "main-key" # referencia al par de claves para acceder a nuestro dispositivo
+
+  network_interface { #  Bloque interfaz de red
+    
+    device_index = 0 # definimos que esta sea su primera interfaz configurandolo en cero.
+                     # como en cualquier lenguaje de programacion el primer numero con el que empiezas es 0 en lugar de 1.
+
+
+    network_interface_id = aws_network_interface.web-server-nic.id # este id hace referencia al id de la interfaz de red
+
+
+  }
+
+  tags = {
+    Name = "web-server" # nombre que le asignamos a la etiqueta = web-server
+
+
+  }  
+
+  # secuencia de comandos bash para instalar apache web server
+  user_data = <<-EOF 
+                 #!/bin/bash
+                 sudo apt update -y
+                 sudo apt install apache2 -y
+                 sudo systemctl start apache2
+                 sudo bash -c 'echo your very web server > /var/www/html/index.html'
+                 EOF     
 }
 
 
